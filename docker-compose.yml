@@ -1,0 +1,39 @@
+services:
+  shopify_scv:
+    container_name: shopify_scv
+    image: postgres:16
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - '${POSTGRES_PORT}:5432'
+    networks:
+      - shopify_scv
+    restart: unless-stopped
+
+  csv_pgadmin-dev:
+    container_name: csv_pgadmin-dev
+    image: dpage/pgadmin4
+    env_file:
+      - ./.env
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - '${PGADMIN_DEFAULT_PORT}:80'
+    networks:
+      - shopify_scv
+    restart: unless-stopped
+
+networks:
+  shopify_scv:
+    driver: bridge
+
+volumes:
+  postgres:
