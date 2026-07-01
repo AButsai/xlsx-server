@@ -4,6 +4,7 @@
 /build
 
 helper.txt
+todo.txt
 # Logs
 logs
 *.log

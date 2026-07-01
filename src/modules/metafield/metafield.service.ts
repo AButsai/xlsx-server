@@ -1,19 +1,20 @@
-import { ParsedProduct } from '@/src/types/types';
-import { sleep } from '@/src/utils/helpers';
+import { ParsedProduct, XlsxRow } from '@/src/shared/types/types';
+import { sleep } from '@/src/shared/utils/helpers';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import * as XLSX from 'xlsx';
+import { GenerateCsvService } from '../generate-csv/generate-csv.service';
 import { GqlRequestService } from '../gql-request/gql-request.service';
-import { ParseXlsxService } from '../parse-xlsx/parse-xlsx.service';
 
 @Injectable()
 export class MetafieldService {
   constructor(
-    private readonly parseXlsxService: ParseXlsxService,
+    private readonly generateCsvService: GenerateCsvService,
     private readonly gqlRequestService: GqlRequestService,
   ) {}
 
-  async updateMetafield(id: string, file: Express.Multer.File) {
-    const products = this.parseXlsxService.parseXlsx(file);
+  async updateMetafield(id: number, file: Express.Multer.File) {
+    const products = this.generateCsvService.parseXlsx(file);
 
     const withMeta = products.filter(
       (p) => p.metaLongDescription || p.metaComposition || p.metaApplication,
@@ -50,7 +51,7 @@ export class MetafieldService {
 
   private async resolveHandlesToGids(
     handles: string[],
-    id: string,
+    id: number,
   ): Promise<Record<string, string>> {
     const BATCH = 50;
     const result: Record<string, string> = {};
@@ -107,6 +108,7 @@ export class MetafieldService {
 
       for (const { key, field } of metaEntries) {
         const value = product[field];
+        console.log('value ===>', value);
         if (!value) continue;
 
         lines.push(
@@ -130,7 +132,7 @@ export class MetafieldService {
 
   private async stagedUpload(
     buffer: Buffer,
-    id: string,
+    id: number,
   ): Promise<{
     url: string;
     resourceUrl: string;
@@ -183,7 +185,7 @@ export class MetafieldService {
 
   private async runBulkMutation(
     stagedUploadPath: string,
-    id: string,
+    id: number,
   ): Promise<string> {
     const mutation = `
 				mutation bulkOperationRunMutation($mutation: String!, $stagedUploadPath: String!) {
@@ -220,7 +222,7 @@ export class MetafieldService {
     return data.bulkOperationRunMutation.bulkOperation.id;
   }
 
-  private async pollBulkOperation(id: string): Promise<string> {
+  private async pollBulkOperation(id: number): Promise<string> {
     const query = `
 				query {
 					currentBulkOperation(type: MUTATION) {
@@ -255,5 +257,18 @@ export class MetafieldService {
     }
 
     throw new Error('Bulk operation timeout (5 min)');
+  }
+
+  private parseXlsx(file: Express.Multer.File) {
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json<XlsxRow>(sheet);
+
+    const products = [];
+
+    // for (const row of rows) {
+    // }
+
+    return products;
   }
 }

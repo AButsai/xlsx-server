@@ -15,10 +15,10 @@ export class GqlRequestService {
 
   async gqlRequest<T>(
     query: string,
-    id: string,
+    id: number,
     variables?: Record<string, unknown>,
   ): Promise<T> {
-    const store = await this.prisma.storeConfig.findUnique({ where: { id } });
+    const store = await this.prisma.store.findUnique({ where: { id } });
 
     if (!store) throw new NotFoundException('Store not found');
 

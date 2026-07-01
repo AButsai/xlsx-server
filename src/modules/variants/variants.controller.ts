@@ -9,19 +9,19 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { MetafieldService } from './metafield.service';
+import { VariantsService } from './variants.service';
 
-@Controller('metafield')
-export class MetafieldController {
-  constructor(private readonly metafieldService: MetafieldService) {}
+@Controller('variants')
+export class VariantsController {
+  constructor(private readonly variantsService: VariantsService) {}
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
-  async updateMetafield(
+  async updateVariant(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.metafieldService.updateMetafield(id, file);
+    return await this.variantsService.updateVariant(id, file);
   }
 }

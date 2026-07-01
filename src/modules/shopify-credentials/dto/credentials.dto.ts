@@ -1,4 +1,4 @@
-import { EShopApiVersion } from '@/src/enums/shop-api-version.enum';
+import { EShopApiVersion } from '@/src/shared/enums/shop-api-version.enum';
 import {
   IsEnum,
   IsNotEmpty,
@@ -8,15 +8,15 @@ import {
 } from 'class-validator';
 
 export class ShopifyCredentialDto {
-  @IsNotEmpty()
-  @IsUrl()
+  @IsNotEmpty({ message: 'Not empty' })
+  @IsUrl({}, { message: 'Invalid URL' })
   shopDomain: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Not empty' })
   @IsString()
   accessToken: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Not empty' })
   @IsString()
   title: string;
 

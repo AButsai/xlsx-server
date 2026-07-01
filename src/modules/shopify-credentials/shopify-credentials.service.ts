@@ -18,7 +18,7 @@ export class ShopifyCredentialsService {
   ) {}
 
   async createCredential(
-    userId: string | undefined,
+    userId: number | undefined,
     dto: ShopifyCredentialDto,
   ) {
     if (!userId) throw new UnauthorizedException('NOT_AUTHORIZED');
@@ -35,13 +35,13 @@ export class ShopifyCredentialsService {
     });
     const shopDomain = new URL(dto.shopDomain).origin;
 
-    const shop = await this.prisma.storeConfig.findUnique({
+    const shop = await this.prisma.store.findUnique({
       where: { shopDomain },
     });
 
-    if (shop) throw new ConflictException('Store config is extension');
+    if (shop) throw new ConflictException('Store config is exists');
 
-    const newStoreConfig = await this.prisma.storeConfig.create({
+    const newStoreConfig = await this.prisma.store.create({
       data: {
         title: dto.title,
         shopDomain,
@@ -54,27 +54,47 @@ export class ShopifyCredentialsService {
     return `Store config created. Id: ${newStoreConfig.id}`;
   }
 
-  async getCredentials(userId: string | undefined) {
-    if (!userId) throw new UnauthorizedException('NOT_AUTHORIZED');
-    const user = await this.getUser(userId);
-    return await this.prisma.storeConfig.findMany({
-      where: { userId: user.id },
+  async getCredentials(userId: number | undefined, id: number) {
+    return await this.prisma.store.findUnique({
+      where: {
+        userId,
+        id,
+      },
       select: {
         title: true,
+        shopDomain: true,
+        apiVersion: true,
         id: true,
+        createdAt: true,
       },
     });
   }
 
-  async deleteCredentials(userId: string | undefined, id: string) {
+  async updateCredentials(
+    userId: number | undefined,
+    shopId: number,
+    dto: Partial<ShopifyCredentialDto>,
+  ) {
+    if (!userId) return;
+    await this.getUser(userId);
+
+    await this.prisma.store.update({
+      where: { id: shopId },
+      data: { ...dto },
+    });
+
+    return { access: true };
+  }
+
+  async deleteCredentials(userId: number | undefined, id: number) {
     if (!userId) throw new UnauthorizedException('NOT_AUTHORIZED');
     await this.getUser(userId);
-    await this.prisma.storeConfig.delete({ where: { id } });
+    await this.prisma.store.delete({ where: { id } });
 
     return `Stor config deleted. Id: ${id}`;
   }
 
-  async getUser(id: string) {
+  async getUser(id: number) {
     const user = await this.prisma.user.findUnique({ where: { id } });
 
     if (!user) throw new NotFoundException('User not found');

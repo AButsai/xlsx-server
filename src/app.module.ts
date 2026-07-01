@@ -6,10 +6,15 @@ import { CorsMiddleware } from './middlewares/cors-middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { BunnyModule } from './modules/bunny/bunny.module';
 import { DeleteProductsModule } from './modules/delete-products/delete-products.module';
+import { GenerateCsvModule } from './modules/generate-csv/generate-csv.module';
+import { GenerateXlsxModule } from './modules/generate-xlsx/generate-xlsx.module';
 import { GqlRequestModule } from './modules/gql-request/gql-request.module';
 import { MetafieldModule } from './modules/metafield/metafield.module';
-import { ParseXlsxModule } from './modules/parse-xlsx/parse-xlsx.module';
 import { ShopifyCredentialsModule } from './modules/shopify-credentials/shopify-credentials.module';
+import { UserModule } from './modules/user/user.module';
+import { StoreModule } from './modules/store/store.module';
+import { TagsModule } from './modules/tags/tags.module';
+import { VariantsModule } from './modules/variants/variants.module';
 
 @Module({
   imports: [
@@ -23,7 +28,12 @@ import { ShopifyCredentialsModule } from './modules/shopify-credentials/shopify-
     DeleteProductsModule,
     MetafieldModule,
     GqlRequestModule,
-    ParseXlsxModule,
+    GenerateCsvModule,
+    GenerateXlsxModule,
+    UserModule,
+    StoreModule,
+    TagsModule,
+    VariantsModule,
   ],
   controllers: [],
   providers: [],

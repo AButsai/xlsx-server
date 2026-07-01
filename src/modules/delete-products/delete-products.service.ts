@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { sleep } from '@/src/utils/helpers';
+import { sleep } from '@/src/shared/utils/helpers';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { GqlRequestService } from '../gql-request/gql-request.service';
@@ -9,7 +9,7 @@ export class DeleteProductsService {
   constructor(private readonly gqlRequestService: GqlRequestService) {}
 
   async deleteProducts(
-    id: string,
+    id: number,
   ): Promise<{ success: boolean; result: string }> {
     await this.runBulkQuery(id);
     const fileUrl = await this.pollBulkOperation('QUERY', id);
@@ -34,7 +34,7 @@ export class DeleteProductsService {
     return { success: true, result: `Deleted ${productIds.length} products` };
   }
 
-  private async runBulkQuery(id: string): Promise<void> {
+  private async runBulkQuery(id: number): Promise<void> {
     const mutation = `
 				mutation {
 					bulkOperationRunQuery(
@@ -70,7 +70,7 @@ export class DeleteProductsService {
 
   private async stagedUpload(
     buffer: Buffer,
-    id: string,
+    id: number,
   ): Promise<{
     url: string;
     resourceUrl: string;
@@ -123,7 +123,7 @@ export class DeleteProductsService {
 
   private async runBulkDeleteMutation(
     stagedUploadPath: string,
-    id: string,
+    id: number,
   ): Promise<void> {
     const mutation = `
 				mutation bulkOperationRunMutation($mutation: String!, $stagedUploadPath: String!) {
@@ -157,7 +157,7 @@ export class DeleteProductsService {
 
   private async pollBulkOperation(
     type: 'QUERY' | 'MUTATION',
-    id: string,
+    id: number,
   ): Promise<string> {
     const query = `
 				query {

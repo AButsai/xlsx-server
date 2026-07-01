@@ -62,7 +62,7 @@ export class AuthService {
     return tokens?.accessToken;
   }
 
-  async logout(id: string | undefined) {
+  async logout(id: number | undefined) {
     if (!id) return;
 
     await this.prisma.user.update({

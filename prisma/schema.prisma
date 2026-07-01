@@ -19,28 +19,68 @@ enum EnumRole {
 }
 
 model User {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   email       String   @unique
   password    String?
   accessToken String?
   role        EnumRole
+  payment     Boolean  @default(false)
 
-  stores StoreConfig[]
+  stores Store[]
+
+  files File[]
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  historyConverts HistoryConvert[]
+}
+
+model Store {
+  id                   Int              @id @default(autoincrement())
+  title                String
+  shopDomain           String           @unique
+  accessTokenEncrypted String
+  apiVersion           String           @default("2025-07")
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  userId               Int
+  user                 User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files                File[]
+  historyConverts      HistoryConvert[]
+
+  @@map("store_configs")
+}
+
+model File {
+  id      Int    @id @default(autoincrement())
+  title   String
+  fileUrl String
+  type    String @default("xlsx")
+  size    String @default("KB")
+
+  storeId Int?
+  store   Store? @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model StoreConfig {
-  id                   String   @id @default(cuid())
-  title                String
-  shopDomain           String   @unique
-  accessTokenEncrypted String
-  apiVersion           String   @default("2025-07")
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-  userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model HistoryConvert {
+  id Int @id @default(autoincrement())
 
-  @@map("store_configs")
+  fileUrl String
+  size    String @default("KB")
+
+  titleCsv  String
+  titleXlsx String
+
+  storeId Int?
+  store   Store? @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

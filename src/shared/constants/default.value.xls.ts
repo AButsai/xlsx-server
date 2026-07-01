@@ -1,0 +1,15 @@
+export const standardColumns = [
+  'Title',
+  'Description',
+  'Variant SKU',
+  'Volume',
+  'Price',
+  'Brand',
+  'Category',
+  'Type',
+  'Tags',
+  'Best',
+  'New',
+  'Media urls',
+  'Product url',
+] as const;
