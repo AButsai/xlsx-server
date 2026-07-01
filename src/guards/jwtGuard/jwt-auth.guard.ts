@@ -1,3 +1,4 @@
+import { TUser } from '@/src/shared/types/user.types';
 import {
   CanActivate,
   ExecutionContext,
@@ -8,10 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
-import { TUser } from '@/src/types/user.types';
-
 type JwtPayload = {
-  id: string;
+  id: number;
   email: string;
 };
 

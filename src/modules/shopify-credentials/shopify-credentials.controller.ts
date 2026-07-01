@@ -5,6 +5,8 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -32,14 +34,37 @@ export class ShopifyCredentialsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async getCredentials(@Req() req: Request) {
-    return await this.shopifyCredentialsService.getCredentials(req.user?.id);
+  @Get(':id')
+  async getCredentials(
+    @Req() req: Request,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return await this.shopifyCredentialsService.getCredentials(
+      req.user?.id,
+      id,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  async updateCredentials(
+    @Req() req: Request,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: Partial<ShopifyCredentialDto>,
+  ) {
+    return await this.shopifyCredentialsService.updateCredentials(
+      req.user?.id,
+      id,
+      dto,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async deleteCredentials(@Req() req: Request, @Param('id') id: string) {
+  async deleteCredentials(
+    @Req() req: Request,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     return await this.shopifyCredentialsService.deleteCredentials(
       req.user?.id,
       id,

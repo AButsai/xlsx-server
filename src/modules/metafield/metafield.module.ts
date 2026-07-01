@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { GenerateCsvModule } from '../generate-csv/generate-csv.module';
 import { GqlRequestModule } from '../gql-request/gql-request.module';
-import { ParseXlsxModule } from '../parse-xlsx/parse-xlsx.module';
 import { MetafieldController } from './metafield.controller';
 import { MetafieldService } from './metafield.service';
 
 @Module({
-  imports: [ParseXlsxModule, GqlRequestModule, ParseXlsxModule],
+  imports: [GenerateCsvModule, GqlRequestModule],
   controllers: [MetafieldController],
   providers: [MetafieldService, JwtService],
 })
